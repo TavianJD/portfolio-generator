@@ -1,6 +1,6 @@
 const inquirer = require('inquirer');
 const Choices = require('inquirer/lib/objects/choices');
-const fs = require('fs');
+const { writeFile, copyFile } = require('./utils/generate-site.js');
 const generatePage = require('./src/page-template.js');
 
 
@@ -136,16 +136,22 @@ const promptProject = portfolioData => {
          });
 };
 
+
 promptUser()
-   .then(promptProject)
-   .then(portfolioData => {
-      const pageHTML = generatePage(portfolioData);
-      // we interpolated the text using variables passed into the function that created the output.
-
-
-       fs.writeFile('index.html', pageHTML, err => {
-          if (err) throw new  (err);
-
-         console.log('Portfolio complete! Check out index.html to see the output!')
-      });
-   });
+  .then(promptProject)
+  .then(portfolioData => {
+    return generatePage(portfolioData);
+  })
+  .then(pageHTML => {
+    return writeFile(pageHTML);
+  })
+  .then(writeFileResponse => {
+    console.log(writeFileResponse);
+    return copyFile();
+  })
+  .then(copyFileResponse => {
+    console.log(copyFileResponse);
+  })
+  .catch(err => {
+    console.log(err);
+  });
